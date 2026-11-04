@@ -1,0 +1,72 @@
+\NeedsTeXFormat{LaTeX2e}\ProvidesPackage{lacia}[2026/11/04 Lacia Pale Periwinkle]
+\newif\ifLaciaDark\LaciaDarktrue
+\newif\ifLaciaPurple\LaciaPurplefalse
+\DeclareOption{dark}{\LaciaDarktrue}\DeclareOption{light}{\LaciaDarkfalse}
+\DeclareOption{darkpurple}{\LaciaDarktrue\LaciaPurpletrue}
+\ProcessOptions\relax
+\RequirePackage[table]{xcolor}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{fancyhdr,hyperref,listings,booktabs,tabularx,array,amsmath,amssymb,enumitem,tikz,needspace}
+\usetikzlibrary{arrows.meta,positioning}
+\ifLaciaPurple\input{lacia-palette-darkpurple.def}\else\ifLaciaDark\input{lacia-palette-dark.def}\else\input{lacia-palette-light.def}\fi\fi
+\LaciaApplyPage
+\hypersetup{colorlinks=true,linkcolor=LaciaViolet!100,urlcolor=LaciaViolet!100,citecolor=LaciaViolet!100}
+% ---- headings（兼容 ctexart / ctexbook）----
+\ctexset{
+ section={format=\Large\bfseries\sffamily\color{LaciaDeep},name={,},number=\textcolor{LaciaViolet}{\thesection}\hspace{.6em},beforeskip=20pt,afterskip=9pt},
+ subsection={format=\large\bfseries\sffamily\color{LaciaViolet},beforeskip=14pt,afterskip=6pt}}
+\ifdefined\chapter
+ \ctexset{chapter={format=\fontsize{26}{34}\selectfont\bfseries\sffamily\color{LaciaDeep},name={第,章},number=\textcolor{LaciaViolet}{\arabic{chapter}},beforeskip=0pt,afterskip=18pt}}
+\fi
+\AddToHook{cmd/section/before}{\needspace{8\baselineskip}}
+% ---- header / footer ----
+\pagestyle{fancy}\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}\renewcommand{\footrulewidth}{0pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{LaciaRule}\leaders\hrule height \headrulewidth\hfill}}
+\fancyhead[L]{\small\sffamily\color{LaciaMuted}\LaciaHeadL}\fancyhead[R]{\small\sffamily\color{LaciaMuted}\leftmark}
+\fancyfoot[C]{\small\sffamily\color{LaciaMuted}\thepage}
+\newcommand{\LaciaHeadL}{}
+% ---- callouts ----
+\tcbset{laciabox/.style={enhanced,frame hidden,boxrule=0pt,arc=1.5pt,
+ colback=LaciaSurface,colupper=LaciaText,left=11pt,right=10pt,top=7pt,bottom=7pt,
+ before skip=10pt,after skip=10pt,
+ fonttitle=\sffamily\bfseries\small,attach title to upper={\par\vspace{2pt}}}}
+\newtcolorbox{keypoint}{laciabox,title=关键点,borderline west={2.2pt}{0pt}{LaciaViolet},coltitle=LaciaViolet}
+\newtcolorbox{pitfall}{laciabox,title=易错,borderline west={2.2pt}{0pt}{LaciaRose},coltitle=LaciaRose}
+\newtcolorbox{errata}{laciabox,title=勘误,borderline west={2.2pt}{0pt}{LaciaCoral},coltitle=LaciaCoral}
+\newtcolorbox{supp}{laciabox,title=补充,borderline west={2.2pt}{0pt}{LaciaTeal},coltitle=LaciaTeal}
+% ---- 章节概述（可选；要写就写成完整的一段，不放关键词串或单图）----
+\newtcolorbox{overview}{enhanced,breakable,frame hidden,boxrule=0pt,arc=0pt,colback=LaciaBg,colupper=LaciaText,
+ left=0pt,right=0pt,top=8pt,bottom=8pt,before skip=6pt,after skip=12pt,
+ borderline north={0.5pt}{0pt}{LaciaRule},borderline south={0.5pt}{0pt}{LaciaRule},
+ title=本章概述,fonttitle=\sffamily\bfseries\small,coltitle=LaciaViolet,attach title to upper={\par\vspace{3pt}}}
+% ---- code (VS Code 风格) ----
+\newcommand{\LaciaLang}{C}
+\lstdefinestyle{lacia}{basicstyle=\ttfamily\small\color{LaciaText},
+ keywordstyle=\color{LaciaViolet},keywordstyle={[2]\color{LaciaTeal}},keywordstyle={[3]\color{LaciaRose}},
+ commentstyle=\color{LaciaMuted}\itshape,stringstyle=\color{LaciaAmber},
+ numberstyle=\ttfamily\scriptsize\color{LaciaMuted},numbers=left,numbersep=20pt,
+ columns=fullflexible,keepspaces=true,showstringspaces=false,xleftmargin=0pt,breaklines=true,
+ tabsize=4,language=C,aboveskip=0pt,belowskip=0pt,
+ morekeywords={[2]size_t,bool,uint8_t,uint32_t,int64_t,FILE},
+ morekeywords={[3]SHIFT,REDUCE,ACCEPT,NULL,true,false}}
+\lstset{style=lacia}
+\newcommand{\LaciaTab}[1]{\hspace*{-33pt}{\color{LaciaViolet}\small\textbullet}\hspace{5pt}\textcolor{LaciaDeep}{#1}\hfill\textcolor{LaciaMuted}{\LaciaLang}}
+\newtcblisting{code}[2][]{enhanced,listing only,
+ colback=LaciaCode,colframe=LaciaRule,boxrule=0.4pt,arc=2pt,
+ colbacktitle=LaciaPale,coltitle=LaciaDeep,fonttitle=\sffamily\small,
+ toptitle=3.5pt,bottomtitle=3.5pt,title={\LaciaTab{#2}},
+ left=44pt,right=10pt,top=7pt,bottom=7pt,before skip=11pt,after skip=11pt,
+ overlay={\fill[LaciaGutter] (interior.north west) rectangle ([xshift=34pt]interior.south west);
+          \draw[LaciaRule,line width=0.4pt] ([xshift=34pt]interior.north west)--([xshift=34pt]interior.south west);},
+ listing options={style=lacia},#1}
+\newcommand{\tm}[1]{\texttt{\textcolor{LaciaViolet}{#1}}}
+% ---- table ----
+\newcommand{\hl}{\color{LaciaRule}\arrayrulecolor{LaciaRule}}
+\renewcommand{\arraystretch}{1.25}\arrayrulecolor{LaciaRule}
+\ifdefined\chapter\renewcommand{\chaptermark}[1]{\markboth{#1}{}}\renewcommand{\sectionmark}[1]{}\else\renewcommand{\sectionmark}[1]{\markboth{#1}{}}\fi
+\newcommand{\lth}[1]{\cellcolor{LaciaPale}\textcolor{LaciaDeep}{\sffamily\bfseries #1}}
+\setlist{itemsep=2pt,topsep=4pt,leftmargin=1.6em}
+\setlist[itemize]{label=\textcolor{LaciaViolet}{\textbullet}}
+\setlist[enumerate]{label=\textcolor{LaciaViolet}{\arabic*.}}
+\endinput

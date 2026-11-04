@@ -1,0 +1,50 @@
+\chapter{二分查找}
+\begin{overview}
+上一阶段我们用线性扫描在数组里找数，代价与长度成正比。数据一旦有序，这个代价可以降到对数级：每比较一次就能丢掉一半候选。本章要解决的问题是，如何把这个想法写成一段在任何边界输入下都正确的程序。你会先看到最常见的两种错误写法，再学到``半开区间 + 不变量''的写法，最后用同一套框架解决``第一个不小于目标的位置''这类变体。读完应当能不查资料写出无错的二分，并能说清每一行为什么这样写。
+\end{overview}
+
+\section{为什么有序就能更快}
+设数组 $a$ 升序，长度为 $n$，目标为 $x$。取中点 $m$ 比较：若 $a[m]<x$，则 $x$ 只可能在右半边；若 $a[m]\ge x$，则只可能在左半边（含 $m$）。每次比较把候选区间减半，所以最多比较 $\lceil\log_2 n\rceil+1$ 次。
+
+\begin{keypoint}
+二分的本质不是``找中间那个数''，而是\textbf{维护一个不变量}：目标若存在，必在当前区间内。每一步都在保持这个不变量的前提下缩小区间。
+\end{keypoint}
+
+\section{把它写对}
+下面的写法用左闭右开区间 $[l,r)$，不变量是：答案（第一个不小于 $x$ 的下标）总在 $[l,r]$ 内。
+
+\begin{code}{lower\_bound.c}
+int lower_bound(const int *a, int n, int x) {
+    int l = 0, r = n;                 /* 答案范围 [l, r] */
+    while (l < r) {
+        int m = l + (r - l) / 2;      /* 不写 (l+r)/2，避免溢出 */
+        if (a[m] < x) l = m + 1;      /* 答案在 m 右侧 */
+        else          r = m;          /* m 可能就是答案 */
+    }
+    return l;                         /* l == r，即答案 */
+}
+\end{code}
+
+\begin{pitfall}
+最常见的三个错误：中点写成 $(l+r)/2$ 在大数组上溢出；循环条件写成 \tm{l <= r} 却用半开区间的更新方式，导致死循环；更新 \tm{r = m - 1} 把可能的答案丢掉。三者的共同原因都是没有先写出不变量。
+\end{pitfall}
+
+\begin{center}
+\begin{tabularx}{.9\textwidth}{>{\raggedright\arraybackslash}p{3.2cm}Xl}
+\toprule \lth{问题} & \lth{返回值} & \lth{调用方式}\\\midrule
+第一个 $\ge x$ 的位置 & $l$ & \tm{lower\_bound(a,n,x)}\\
+第一个 $>x$ 的位置 & $l$ & \tm{lower\_bound(a,n,x+1)}\\
+元素 $x$ 的个数 & 两者之差 & 两次调用相减\\\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{supp}
+当``满足条件''是一个关于下标单调的判定（先全假、后全真），二分就可以用来求最小的真下标，与数组里存的是什么无关。这就是常说的``二分答案''。
+\end{supp}
+
+\section{自测}
+\begin{enumerate}
+\item 在不变量``答案在 $[l,r]$ 内''下，为什么循环条件是 $l<r$ 而不是 $l\le r$？
+\item 若把 \tm{r = m} 改成 \tm{r = m - 1}，哪一类输入会出错？请构造一个最小反例。
+\item 如何用一次二分判断 $x$ 是否在数组中？
+\end{enumerate}

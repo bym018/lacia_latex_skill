@@ -1,0 +1,9 @@
+% Lacia Pale Periwinkle — 亮色（屏幕 + 打印共用，页面纯白不铺底色，省墨）
+\definecolor{LaciaBg}{HTML}{FFFFFF}\definecolor{LaciaSurface}{HTML}{EEF2FB}
+\definecolor{LaciaPale}{HTML}{DCE4F5}\definecolor{LaciaLavender}{HTML}{7F95D0}
+\definecolor{LaciaViolet}{HTML}{4753C9}\definecolor{LaciaDeep}{HTML}{12264A}
+\definecolor{LaciaText}{HTML}{1A2438}\definecolor{LaciaMuted}{HTML}{5A6986}
+\definecolor{LaciaRule}{HTML}{C5D0E6}
+\definecolor{LaciaRose}{HTML}{B0386A}\definecolor{LaciaTeal}{HTML}{1D7A71}\definecolor{LaciaCoral}{HTML}{C14A24}\definecolor{LaciaAmber}{HTML}{8A6210}
+\definecolor{LaciaCode}{HTML}{F7F9FD}\definecolor{LaciaGutter}{HTML}{EAEFF9}
+\newcommand{\LaciaApplyPage}{\color{LaciaText}}

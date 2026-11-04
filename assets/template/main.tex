@@ -1,0 +1,26 @@
+% 讲义主文件。编译：make light | make dark | make violet
+\documentclass[UTF8,a4paper,11pt,fontset=none,oneside,openany]{ctexbook}
+\setCJKmainfont{Noto Serif CJK SC}[BoldFont=Noto Serif CJK SC Bold,AutoFakeSlant=0.2]
+\setCJKsansfont{Noto Sans CJK SC}[BoldFont=Noto Sans CJK SC Bold]
+\setCJKmonofont{Noto Sans Mono CJK SC}[AutoFakeSlant=0.2]
+\setmonofont{DejaVu Sans Mono}[Scale=0.85]
+\usepackage[margin=24mm,headheight=16pt]{geometry}
+\providecommand{\Edition}{light}   % light | dark | darkpurple，由 Makefile 传入
+\usepackage[\Edition]{lacia}
+\linespread{1.2}\setlength{\parskip}{4pt}\raggedbottom
+\setcounter{tocdepth}{1}
+\hypersetup{pdftitle={二分查找讲义}}
+\newcommand{\LaciaHeadLText}{二分查找}
+\renewcommand{\LaciaHeadL}{\LaciaHeadLText}
+
+\begin{document}
+\frontmatter
+\thispagestyle{empty}
+\vspace*{38mm}\noindent{\fontsize{38}{50}\selectfont\bfseries\sffamily\color{LaciaDeep}二分查找\par}
+\vspace{4mm}\noindent{\color{LaciaRule}\rule{\textwidth}{0.5pt}}
+\newpage
+\input{chapters/00-howto}
+\tableofcontents
+\mainmatter
+\input{chapters/01-binary-search}
+\end{document}

@@ -1,0 +1,9 @@
+% Lacia Pale Periwinkle — 暗色（深冰蓝）
+\definecolor{LaciaBg}{HTML}{0C1A2F}\definecolor{LaciaSurface}{HTML}{122340}
+\definecolor{LaciaPale}{HTML}{1A3159}\definecolor{LaciaLavender}{HTML}{6079BC}
+\definecolor{LaciaViolet}{HTML}{B1B9F9}\definecolor{LaciaDeep}{HTML}{D8DFF8}
+\definecolor{LaciaText}{HTML}{E3E8F3}\definecolor{LaciaMuted}{HTML}{8A9BBA}
+\definecolor{LaciaRule}{HTML}{2B4268}
+\definecolor{LaciaRose}{HTML}{E3A1B9}\definecolor{LaciaTeal}{HTML}{86C6BF}\definecolor{LaciaCoral}{HTML}{F29B76}\definecolor{LaciaAmber}{HTML}{EBC45C}
+\definecolor{LaciaCode}{HTML}{091527}\definecolor{LaciaGutter}{HTML}{0D1C33}
+\newcommand{\LaciaApplyPage}{\pagecolor{LaciaBg}\color{LaciaText}}
