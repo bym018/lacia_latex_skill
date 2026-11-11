@@ -1,6 +1,6 @@
 ---
 name: lacia-notes
-description: 用 Lacia Pale Periwinkle 版式生成独立使用的 LaTeX/xelatex 学习讲义（中文，ctexbook）。当用户要求制作、重排、改写课程讲义、复习笔记、知识整理类 PDF，或提到 Lacia 模板、亮色/暗色讲义时使用。包含模板本体、内容编排规则与限制。
+description: 用 Lacia Pale Periwinkle 版式生成独立使用的 LaTeX/xelatex 学习讲义（中文，ctexbook）。当用户要求制作、重排、改写课程讲义、复习笔记、知识整理类 PDF，或提到 Lacia 模板、亮色/暗色讲义时使用。包含模板本体、符号旁注组件、内容编排规则与限制。
 ---
 
 # lacia-notes
@@ -13,8 +13,9 @@ description: 用 Lacia Pale Periwinkle 版式生成独立使用的 LaTeX/xelatex
 2. 先读 `references/content-rules.md`，在动笔前确定每章的结构与概述写法。
 3. 改 `main.tex` 的标题、`\LaciaHeadLText`、`\hypersetup{pdftitle=...}`；删掉示例章节 `chapters/01-binary-search.tex`，按需新增 `chapters/NN-xxx.tex` 并在 `main.tex` 里 `\input`。
 4. 重写 `chapters/00-howto.tex`（"如何使用这份讲义"），内容见规则第 1 条。
-5. `make all` 一次出三版；只要一版就 `make light` / `make dark` / `make violet`。
-6. 编译后必须检查：无 LaTeX 报错、无溢出到版心外的行、色块没有孤标题、目录与页眉正确。看渲染后的页面，不要只看日志。
+5. 在 `symbols.tex` 登记专用记号，正文用宏书写（见 `references/symbols.md`）。不需要符号旁注时，删掉 `main.tex` 里 `lacia-symbols` 两行和符号表附录。
+6. `make all` 先跑 `symcheck` 再出三版；只要一版就 `make light` / `make dark` / `make violet`。
+7. 编译后必须检查：无 LaTeX 报错、无溢出到版心外的行、色块没有孤标题、目录与页眉正确、`symcheck` 的 A/C 类为 0。看渲染后的页面，不要只看日志。
 
 ## 版本
 
@@ -36,10 +37,12 @@ description: 用 Lacia Pale Periwinkle 版式生成独立使用的 LaTeX/xelatex
 4. **每章概述可选，写就写完整。** 用 `overview` 环境，必须说清：上一阶段的做法、它的局限、本章换了什么、读完能做什么。不得只放关键词或一张图。允许在概览节中作图。
 5. **色块克制使用。** 一页内同类色块不连放；不要为了装饰加色块。四种色块各有固定语义，不得混用（见 `references/components.md`）。
 6. **不自造颜色。** 只使用 `LaciaXxx` 调色板里的颜色；需要新语义先改调色板文件，三版同步。
+7. **专用记号先登记再使用。** 正文一律用登记过的宏；一符多义拆成不同的宏；释义取自正文定义，不编造。
 
 ## 技术限制
 
-- 编译器：**xelatex**（`ctexbook`）。不要换成 pdflatex。
+- 编译器：**xelatex**（`ctexbook`），用 latexmk 编到 aux 稳定。不要换成 pdflatex，也不要改回固定两遍。
+- 符号旁注占用右页边（不小于约 20mm）；其余限制见 `references/symbols.md`。
 - 依赖字体：Noto Serif/Sans/Sans Mono CJK SC、DejaVu Sans Mono。缺字体时先告知用户，不要静默替换。
 - 代码块 `code` 环境基于 `listings`，**不要**加载 `lstlinebgrd`（与本机 listings 版本冲突，会让整份文档编译崩溃）。
 - 四种色块不可跨页（避免孤标题）；单个色块过长时拆成两个或改为普通段落。
@@ -48,8 +51,14 @@ description: 用 Lacia Pale Periwinkle 版式生成独立使用的 LaTeX/xelatex
 
 ## 文件地图
 
-- `assets/template/lacia.sty` 模板本体；`lacia-palette-*.def` 三套配色
-- `assets/template/main.tex`、`chapters/`、`Makefile` 可直接复制使用的骨架与示例
-- `references/content-rules.md` 内容规则全文与反例
-- `references/components.md` 组件清单与用法
-- `references/palette.md` 色值、对比度与设计决策
+`assets/template/`（整体复制使用）
+- `lacia.sty`、`lacia-palette-*.def`：模板本体与三套配色
+- `lacia-symbols.sty`、`symbols.tex`：符号旁注与符号表组件、登记表示例
+- `symcheck.py`、`symcheck-ignore.txt`：记号检查脚本与忽略表
+- `main.tex`、`chapters/`、`Makefile`：骨架与示例
+
+`references/`
+- `content-rules.md`：内容规则全文与反例
+- `components.md`：组件清单与用法
+- `symbols.md`：符号登记、旁注、检查
+- `palette.md`：色值、对比度与设计决策

@@ -1,4 +1,4 @@
-% 讲义主文件。编译：make light | make dark | make violet
+% 讲义主文件。编译：make all（先跑 symcheck 再出三版）| make light | make dark | make violet
 \documentclass[UTF8,a4paper,11pt,fontset=none,oneside,openany]{ctexbook}
 \setCJKmainfont{Noto Serif CJK SC}[BoldFont=Noto Serif CJK SC Bold,AutoFakeSlant=0.2]
 \setCJKsansfont{Noto Sans CJK SC}[BoldFont=Noto Sans CJK SC Bold]
@@ -7,6 +7,8 @@
 \usepackage[margin=24mm,headheight=16pt]{geometry}
 \providecommand{\Edition}{light}   % light | dark | darkpurple，由 Makefile 传入
 \usepackage[\Edition]{lacia}
+\usepackage{lacia-symbols}   % 可选：符号旁注 + 符号表；不需要就删掉这两行和附录
+\input{symbols}
 \linespread{1.2}\setlength{\parskip}{4pt}\raggedbottom
 \setcounter{tocdepth}{1}
 \hypersetup{pdftitle={二分查找讲义}}
@@ -23,4 +25,8 @@
 \tableofcontents
 \mainmatter
 \input{chapters/01-binary-search}
+\appendix
+\chapter{符号表}
+正文每节第一次出现下列带旁注的符号时，右侧页边会有简短释义。这里给出全部记号的完整含义。
+\LaciaSymbolTable
 \end{document}

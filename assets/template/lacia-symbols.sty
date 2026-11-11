@@ -1,0 +1,100 @@
+\NeedsTeXFormat{LaTeX2e}\ProvidesPackage{lacia-symbols}[2026/11/11 Lacia symbol registry and margin notes]
+% 符号登记表 + 右页边旁注 + 自动生成的符号表附录。需在 lacia.sty 之后加载（用其调色板与 \lth）。
+%
+% 登记（写在单独的 symbols.tex 里）：
+%   \LaciaSymGroup{组键}{组标题}
+%   \LaciaNewSym{\宏}{键}{组键}{宏的排版内容}{表中展示形式，空则同前}{旁注短释义，空则不加旁注}{表中长释义}
+%   \LaciaSymEntry{键}{组键}{表中展示形式}{长释义}          % 只进符号表、不定义宏
+%   \LaciaSymWatch{裸写形式}{提示}                          % 一符多义：symcheck 报告其裸写位置
+% 正文：\宏 正常使用；每节第一次出现时自动加旁注。
+%       \nonote{\宏} 用在“正文正在定义这个符号”的地方：不加旁注，但算作本节已出现。
+%       （不用 \宏* 语法：正文里常有 T\dq*F 这类紧跟乘号的写法，会被误吞。）
+% 附录：\LaciaSymbolSection{组键} 输出一节一张表；\LaciaSymbolTable 输出全部组。
+% 原理：符号处只把（页, 纵坐标）写入 aux，下一轮在 shipout 前景层统一画出，
+%       所以在色块、表格、TikZ 结点、公式里都能用，不改变正文分页；需编译到 aux 稳定（latexmk）。
+\RequirePackage{amsmath,array,tabularx,booktabs}
+\newif\ifLaciaSymNotes
+\ifdefined\mainmatter
+  \LaciaSymNotesfalse
+  \AddToHook{cmd/mainmatter/after}{\global\LaciaSymNotestrue}
+\else
+  \LaciaSymNotestrue
+\fi
+\AddToHook{cmd/appendix/after}{\global\LaciaSymNotesfalse}
+\newlength\LaciaSymNoteSep   \setlength\LaciaSymNoteSep{2.5mm}
+\newlength\LaciaSymNoteWidth \setlength\LaciaSymNoteWidth{0pt}   % 0pt = 按右页边自动取
+\newlength\LaciaSymNoteEdge  \setlength\LaciaSymNoteEdge{3.5mm}  % 旁注到纸边的最小距离
+\newcommand\LaciaSymColumnWidth{30mm}
+\makeatletter
+% ---------- 登记 ----------
+\let\lsn@groups\@empty
+\newcommand\LaciaSymGroup[2]{%
+  \g@addto@macro\lsn@groups{\lsn@dogroup{#1}}%
+  \expandafter\gdef\csname lsn@gt@#1\endcsname{#2}%
+  \expandafter\gdef\csname lsn@rows@#1\endcsname{}}
+\def\lsn@addrow#1#2#3{\ifcsname lsn@rows@#1\endcsname\else
+    \PackageError{lacia-symbols}{未知的符号组 `#1'}{先用 \string\LaciaSymGroup\space 声明}\fi
+  \expandafter\g@addto@macro\csname lsn@rows@#1\endcsname{$#2$ & #3\\}}
+\newcommand\LaciaNewSym[7]{%
+  \expandafter\gdef\csname lsn@s@#2\endcsname{\ifx\relax#5\relax#4\else#5\fi}%
+  \expandafter\gdef\csname lsn@g@#2\endcsname{#6}%
+  \lsn@addrow{#3}{\ifx\relax#5\relax#4\else#5\fi}{#7}%
+  \ifx\relax#6\relax
+    \DeclareRobustCommand#1{#4}%
+  \else
+    \DeclareRobustCommand#1{#4\LaciaSym{#2}}%
+  \fi}
+\newcommand\LaciaSymEntry[4]{\lsn@addrow{#2}{#3}{#4}}
+\newcommand\LaciaSymWatch[2]{}   % 只给 symcheck 看：该记号有多种含义，裸写时要人工判断
+% ---------- 记录位置 ----------
+\newcount\lsn@abs
+\AddToHook{shipout/before}{\global\advance\lsn@abs\@ne}
+\def\lsn@secid{\ifdefined\chapter\arabic{chapter}.\fi\arabic{section}}
+\def\lsn@mark#1#2{\edef\lsn@tmp{\noexpand\pdfsavepos\noexpand\write\noexpand\@auxout{%
+  \string\LaciaSymAt{#1}{\lsn@secid}{\noexpand\the\lsn@abs}{\noexpand\the\noexpand\pdflastypos}{#2}}}%
+  \lsn@tmp}
+\DeclareRobustCommand\LaciaSym[1]{\ifLaciaSymNotes\lsn@mark{#1}{n}\fi}
+\DeclareRobustCommand\LaciaSymQuiet[1]{\ifLaciaSymNotes\lsn@mark{#1}{q}\fi}
+\newcommand\nonote[1]{\begingroup\let\LaciaSym\LaciaSymQuiet#1\endgroup}
+\AtBeginDocument{\pdfstringdefDisableCommands{\def\LaciaSym#1{}\def\LaciaSymQuiet#1{}}}
+% ---------- 读 aux：每节每个符号只看第一次出现 ----------
+\let\lsn@all\@empty
+\newcommand\LaciaSymAt[5]{\ifcsname lsn@seen@#1@#2\endcsname\else
+  \expandafter\gdef\csname lsn@seen@#1@#2\endcsname{}%
+  \if n#5\g@addto@macro\lsn@all{\lsn@entry{#1}{#3}{#4}}\fi\fi}
+\AtEndDocument{\gdef\LaciaSymAt#1#2#3#4#5{}}
+\newdimen\lsn@x \newdimen\lsn@w
+\newcommand\lsn@notebox[1]{\parbox[t]{\lsn@w}{\normalfont\scriptsize\linespread{1.05}\selectfont
+  \raggedright\LaciaSymNotesfalse{\small\color{LaciaViolet}$\csname lsn@s@#1\endcsname$\par}\vspace{1pt}%
+  \color{LaciaMuted}\csname lsn@g@#1\endcsname}}
+% 排布：同一页上下相撞时依次下移
+\newcount\lsn@lastp \newdimen\lsn@lasty
+\def\lsn@entry#1#2#3{%
+  \dimen@=#3sp \advance\dimen@ 7pt
+  \ifnum#2=\lsn@lastp \ifdim\dimen@>\lsn@lasty \dimen@=\lsn@lasty\fi\fi
+  \global\lsn@lastp=#2
+  \sbox\z@{\lsn@notebox{#1}}%
+  \global\lsn@lasty=\dimexpr\dimen@-\ht\z@-\dp\z@-3pt\relax
+  \ifcsname lsn@pg@#2\endcsname\else\expandafter\gdef\csname lsn@pg@#2\endcsname{}\fi
+  \edef\lsn@tmp{\noexpand\lsn@draw{#1}{\the\dimen@}}%
+  \expandafter\lsn@app\expandafter{\lsn@tmp}{#2}}
+\def\lsn@app#1#2{\expandafter\g@addto@macro\csname lsn@pg@#2\endcsname{#1}}
+\AtBeginDocument{%
+  \global\lsn@x=\dimexpr1in+\hoffset+\oddsidemargin+\textwidth+\LaciaSymNoteSep\relax
+  \ifdim\LaciaSymNoteWidth>\z@ \global\lsn@w=\LaciaSymNoteWidth
+  \else \global\lsn@w=\dimexpr\paperwidth-\lsn@x-\LaciaSymNoteEdge\relax\fi
+  \ifdim\lsn@w<12mm \PackageWarningNoLine{lacia-symbols}{右页边太窄（旁注宽 \the\lsn@w），旁注会很挤}\fi
+  \lsn@all}
+\def\lsn@draw#1#2{{\unitlength=1pt\dimen4=\lsn@x\dimen6=\dimexpr#2-\paperheight\relax
+  \put(\strip@pt\dimen4,\strip@pt\dimen6){\makebox(0,0)[tl]{\lsn@notebox{#1}}}}}
+\AddToHook{shipout/foreground}{\ifcsname lsn@pg@\the\lsn@abs\endcsname\csname lsn@pg@\the\lsn@abs\endcsname\fi}
+% ---------- 符号表 ----------
+\newcommand\lsn@table[1]{{\LaciaSymNotesfalse\par\noindent
+  \begin{tabularx}{\textwidth}{>{\centering\arraybackslash}p{\LaciaSymColumnWidth}>{\raggedright\arraybackslash}X}
+  \toprule \lth{记号} & \lth{含义}\\\midrule
+  \csname lsn@rows@#1\endcsname
+  \bottomrule\end{tabularx}\par}}
+\newcommand\LaciaSymbolSection[1]{\section{\csname lsn@gt@#1\endcsname}\lsn@table{#1}}
+\newcommand\LaciaSymbolTable{{\def\lsn@dogroup##1{\LaciaSymbolSection{##1}}\lsn@groups}}
+\makeatother
+\endinput

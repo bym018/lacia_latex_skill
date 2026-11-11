@@ -12,6 +12,10 @@
 | `\begin{code}{文件名}` | VS Code 风格代码块：标签栏 + 行号栏，默认语言 C | 语法色见 palette.md |
 | `\tm{...}` | 行内代码/标识符 | Violet 等宽 |
 | `\lth{...}` | 表头单元格 | Pale 底 + Deep 字 |
+| `\LaciaNewSym` 等 | 符号登记（`lacia-symbols.sty`，写在 `symbols.tex`），见 `symbols.md` | — |
+| `\nonote{\宏}` | 正在定义符号处：不加旁注，算作本节已出现 | — |
+| 旁注 | 每节首次出现的登记符号，右页边自动给出 | 符号 Violet，释义 Muted |
+| `\LaciaSymbolTable` / `\LaciaSymbolSection{组}` | 由登记表生成符号表附录 | 表头同 `\lth` |
 
 ## 用法要点
 

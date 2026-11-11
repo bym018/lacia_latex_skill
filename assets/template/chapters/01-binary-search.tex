@@ -11,7 +11,7 @@
 \end{keypoint}
 
 \section{把它写对}
-下面的写法用左闭右开区间 $[l,r)$，不变量是：答案（第一个不小于 $x$ 的下标）总在 $[l,r]$ 内。
+下面的写法用左闭右开区间 $[l,r)$，不变量是：答案 $\nonote{\lbound}(x)$（第一个不小于 $x$ 的下标）总在 $[l,r]$ 内。
 
 \begin{code}{lower\_bound.c}
 int lower_bound(const int *a, int n, int x) {
@@ -34,7 +34,7 @@ int lower_bound(const int *a, int n, int x) {
 \toprule \lth{问题} & \lth{返回值} & \lth{调用方式}\\\midrule
 第一个 $\ge x$ 的位置 & $l$ & \tm{lower\_bound(a,n,x)}\\
 第一个 $>x$ 的位置 & $l$ & \tm{lower\_bound(a,n,x+1)}\\
-元素 $x$ 的个数 & 两者之差 & 两次调用相减\\\bottomrule
+元素 $x$ 的个数 & $\lbound(x+1)-\lbound(x)$ & 两次调用相减\\\bottomrule
 \end{tabularx}
 \end{center}
 
@@ -47,4 +47,5 @@ int lower_bound(const int *a, int n, int x) {
 \item 在不变量``答案在 $[l,r]$ 内''下，为什么循环条件是 $l<r$ 而不是 $l\le r$？
 \item 若把 \tm{r = m} 改成 \tm{r = m - 1}，哪一类输入会出错？请构造一个最小反例。
 \item 如何用一次二分判断 $x$ 是否在数组中？
+\item 若数组改为降序，$\lbound(x)$ 应当怎样重新定义，代码要改哪一行？
 \end{enumerate}

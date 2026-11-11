@@ -4,3 +4,6 @@
 *.toc
 *.listing
 main-*.pdf
+*.fls
+*.fdb_latexmk
+*.xdv

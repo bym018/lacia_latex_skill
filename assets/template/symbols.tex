@@ -1,0 +1,10 @@
+% 符号登记表：旁注与附录“符号表”的唯一来源。
+% \LaciaSymGroup{组键}{组标题}
+% \LaciaNewSym{\宏}{键}{组}{宏的排版内容}{表中展示，空=同前}{旁注短释义，空=不加旁注}{表中长释义}
+% \LaciaSymEntry{键}{组}{表中展示}{长释义}   只进符号表、不定义宏
+% \LaciaSymWatch{裸写形式}{提示}             一符多义：symcheck 报告其裸写位置
+% 检查：make symcheck
+\LaciaSymGroup{search}{二分查找（第 1 章）}
+
+\LaciaNewSym{\lbound}{lbound}{search}{\operatorname{lb}}{\operatorname{lb}(x)}{第一个 $\ge x$ 的下标}{升序数组中第一个不小于 $x$ 的元素下标；所有元素都小于 $x$ 时为 $n$}
+\LaciaSymEntry{halfopen}{search}{[l,r)}{左闭右开区间：含 $l$，不含 $r$}
